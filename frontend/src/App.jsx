@@ -1,7 +1,11 @@
-import React from "react";
+import LoginPage from "./pages/AuthPages/loginpage";
 
 function App() {
-  return <div>App</div>;
+  return (
+    <div>
+      <LoginPage />
+    </div>
+  );
 }
 
 export default App;
