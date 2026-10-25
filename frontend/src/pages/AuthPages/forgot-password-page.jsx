@@ -6,7 +6,15 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Mail, CheckCircle2, KeyRound } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  CheckCircle2,
+  KeyRound,
+  CircleAlert,
+  Check,
+} from "lucide-react";
+import { resetPassword } from "../../services/authServices";
 
 function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -15,20 +23,41 @@ function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [touched, setTouched] = useState(false);
+
+  const normalizedEmail = email.trim();
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  const isEmailValid = emailPattern.test(normalizedEmail);
+
+  const emailError =
+    touched && normalizedEmail && !isEmailValid
+      ? "Please enter a valid email address."
+      : "";
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+    setError("");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    setLoading(true);
+    setTouched(true);
     setError("");
 
-    try {
-      // TODO: Connect Firebase password reset.
-      // await sendPasswordResetEmail(auth, email);
+    if (!isEmailValid) {
+      return;
+    }
 
+    setLoading(true);
+
+    try {
+      await resetPassword(normalizedEmail);
       setSubmitted(true);
     } catch {
-      setError("Unable to send the reset link. Please try again.");
+      setError("Unable to send the reset link. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -64,7 +93,15 @@ function ForgotPasswordPage() {
                     Email Address
                   </label>
 
-                  <InputGroup>
+                  <InputGroup
+                    className={
+                      emailError
+                        ? "border-destructive focus-within:ring-destructive"
+                        : isEmailValid && touched
+                          ? "border-green-600"
+                          : ""
+                    }
+                  >
                     <InputGroupInput
                       id="email"
                       name="email"
@@ -72,14 +109,45 @@ function ForgotPasswordPage() {
                       placeholder="you@example.com"
                       autoComplete="email"
                       value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      onChange={handleEmailChange}
+                      onBlur={() => setTouched(true)}
+                      aria-invalid={Boolean(emailError)}
+                      aria-describedby={
+                        emailError
+                          ? "email-error"
+                          : isEmailValid && touched
+                            ? "email-valid"
+                            : undefined
+                      }
                       required
                     />
 
                     <InputGroupAddon>
-                      <Mail className="size-4" />
+                      {emailError ? (
+                        <CircleAlert className="size-4 text-destructive" />
+                      ) : isEmailValid && touched ? (
+                        <Check className="size-4 text-green-600" />
+                      ) : (
+                        <Mail className="size-4 text-muted-foreground" />
+                      )}
                     </InputGroupAddon>
                   </InputGroup>
+
+                  {emailError && (
+                    <p
+                      id="email-error"
+                      role="alert"
+                      className="text-sm text-destructive"
+                    >
+                      {emailError}
+                    </p>
+                  )}
+
+                  {isEmailValid && touched && (
+                    <p id="email-valid" className="text-sm text-green-600">
+                      Email format looks good.
+                    </p>
+                  )}
                 </div>
 
                 {error && (
@@ -88,7 +156,11 @@ function ForgotPasswordPage() {
                   </p>
                 )}
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading || !isEmailValid}
+                >
                   {loading ? "Sending..." : "Send Reset Link"}
                 </Button>
               </form>
@@ -117,7 +189,9 @@ function ForgotPasswordPage() {
                 to reset your password.
               </p>
 
-              <p className="mt-4 break-all text-sm font-medium">{email}</p>
+              <p className="mt-4 break-all text-sm font-medium">
+                {normalizedEmail}
+              </p>
 
               <Button
                 type="button"
@@ -131,7 +205,9 @@ function ForgotPasswordPage() {
                 type="button"
                 onClick={() => {
                   setSubmitted(false);
+                  setEmail("");
                   setError("");
+                  setTouched(false);
                 }}
                 className="mt-4 text-sm font-medium text-primary hover:underline"
               >
