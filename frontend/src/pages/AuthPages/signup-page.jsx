@@ -175,7 +175,7 @@ function SignupPage() {
         <section className="rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
           <header className="mb-8 text-center">
             <div className="mb-4 flex justify-center">
-              <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+              <div className="flex size-12 items-center justify-center rounded-xl bg-secondary-foreground text-secondary-foreground">
                 <img
                   src="/kwentify_icon_logo.png"
                   alt="Kwentify Logo"

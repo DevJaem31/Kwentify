@@ -4,12 +4,22 @@ import LoginPage from "../pages/AuthPages/loginpage";
 import SignupPage from "../pages/AuthPages/signup-page";
 import ForgotPasswordPage from "../pages/AuthPages/forgot-password-page";
 
-import ProtectedRoute from "./protectedRoute";
+import ProtectedRoute from "../routes/protectedRoute";
 import DashboardPage from "../pages/ProtectedPages/dashboardPage";
 import NotFound from "../pages/StaticPages/pageNotFound";
 
+// import DashboardHome from "../pages/Dashboard/dashboard-home";
+// import TransactionsPage from "../pages/Transactions/transactions-page";
+// import BudgetsPage from "../pages/Budgets/budgets-page";
+// import SavingsPage from "../pages/Savings/savings-page";
+// import InvestmentsPage from "../pages/Investments/investments-page";
+import SettingsPage from "../pages/ProtectedPages/settingsPage";
+
 const router = createBrowserRouter([
-  // Public routes
+  {
+    path: "/",
+    element: <Navigate to="/login" replace />,
+  },
   {
     path: "/login",
     element: <LoginPage />,
@@ -22,25 +32,41 @@ const router = createBrowserRouter([
     path: "/forgot-password",
     element: <ForgotPasswordPage />,
   },
-
-  // Private routes
   {
     element: <ProtectedRoute />,
     children: [
       {
         path: "/dashboard",
         element: <DashboardPage />,
+        children: [
+          //   {
+          //     index: true,
+          //     element: <DashboardHome />,
+          //   },
+          //   {
+          //     path: "transactions",
+          //     element: <TransactionsPage />,
+          //   },
+          //   {
+          //     path: "budgets",
+          //     element: <BudgetsPage />,
+          //   },
+          //   {
+          //     path: "savings",
+          //     element: <SavingsPage />,
+          //   },
+          //   {
+          //     path: "investments",
+          //     element: <InvestmentsPage />,
+          //   },
+          {
+            path: "settings",
+            element: <SettingsPage />,
+          },
+        ],
       },
     ],
   },
-
-  // Default route
-  {
-    path: "/",
-    element: <Navigate to="/login" replace />,
-  },
-
-  // Custom 404 page
   {
     path: "*",
     element: <NotFound />,

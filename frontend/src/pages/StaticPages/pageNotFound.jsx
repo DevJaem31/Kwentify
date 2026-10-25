@@ -3,7 +3,6 @@ import { ArrowLeft, House } from "lucide-react";
 import kwentifyLogo from "../../assets/logo/kwentify_icon_logo.png";
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -11,19 +10,22 @@ export default function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <main className="relative flex min-h-svh items-center justify-center overflow-hidden bg-background px-3 py-12 text-foreground sm:px-6">
+    <main className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-background px-3 py-12 text-foreground sm:px-6">
+      {/* Background decorations */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -left-32 -top-32 size-80 rounded-full bg-primary/10 blur-3xl"
       />
+
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -bottom-40 -right-32 size-96 rounded-full bg-primary/5 blur-3xl"
       />
 
       <div className="relative w-full max-w-2xl">
+        {/* Logo */}
         <div className="mb-5 flex flex-col items-center justify-center gap-1">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-secondary-foreground text-secondary-foreground shadow-sm">
             <img
               src={kwentifyLogo}
               alt="Kwentify Logo"
@@ -71,9 +73,12 @@ export default function NotFound() {
             {/* Actions */}
             <div className="mx-auto mt-8 flex w-full max-w-sm flex-row gap-3">
               <Button asChild className="h-11 min-w-0 flex-1 rounded-xl">
-                <Link to="/" className="flex items-center justify-center gap-2">
+                <Link
+                  to="/dashboard"
+                  className="flex items-center justify-center gap-2"
+                >
                   <House className="size-4 shrink-0" />
-                  <span>Back to home</span>
+                  <span>Dashboard</span>
                 </Link>
               </Button>
 
@@ -90,6 +95,7 @@ export default function NotFound() {
 
             <Separator className="my-8" />
 
+            {/* Footer message */}
             <div className="flex flex-col items-center gap-2 text-center">
               <p className="text-xs leading-relaxed text-muted-foreground">
                 Having trouble? Check the URL and try again.

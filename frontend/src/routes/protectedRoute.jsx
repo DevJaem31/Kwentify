@@ -31,14 +31,12 @@ function ProtectedRoute() {
 
         <Card className="relative w-full max-w-sm border-border/60 bg-card/90 shadow-xl shadow-black/5 backdrop-blur-sm">
           <CardContent className="flex flex-col items-center px-8 py-10 text-center">
-            {/* Animated icon */}
             <div className="relative mb-6 flex size-16 items-center justify-center rounded-2xl border border-primary/15 bg-primary/5">
               <div className="absolute inset-0 animate-ping rounded-2xl border border-primary/20 [animation-duration:2.5s]" />
 
               <ShieldCheck className="size-8 text-primary" strokeWidth={1.7} />
             </div>
 
-            {/* Loading indicator */}
             <div className="mb-3 flex items-center gap-2">
               <span className="size-1.5 animate-pulse rounded-full bg-primary" />
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
@@ -54,7 +52,6 @@ function ProtectedRoute() {
               Please wait while Kwentify securely checks your account.
             </p>
 
-            {/* Progress indicator */}
             <div className="mt-7 h-1 w-full overflow-hidden rounded-full bg-muted">
               <div className="h-full w-1/3 animate-[loading_1.5s_ease-in-out_infinite] rounded-full bg-primary" />
             </div>
