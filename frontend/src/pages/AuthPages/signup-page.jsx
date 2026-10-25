@@ -8,37 +8,162 @@ import {
 } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Lock, User, UserRound, Mail } from "lucide-react";
+import { signUpWithEmail } from "../../services/authServices";
+
+const initialValues = {
+  fullName: "",
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+
+function validateField(name, value, values) {
+  switch (name) {
+    case "fullName":
+      if (!value.trim()) return "Full name is required.";
+      if (value.trim().length < 2) {
+        return "Full name must contain at least 2 characters.";
+      }
+      return "";
+
+    case "username":
+      if (!value.trim()) return "Username is required.";
+      if (value.trim().length < 3) {
+        return "Username must contain at least 3 characters.";
+      }
+      if (!/^[a-zA-Z0-9_]+$/.test(value.trim())) {
+        return "Use only letters, numbers, and underscores.";
+      }
+      return "";
+
+    case "email":
+      if (!value.trim()) return "Email address is required.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
+        return "Enter a valid email address.";
+      }
+      return "";
+
+    case "password":
+      if (!value) return "Password is required.";
+      if (value.length < 8) {
+        return "Password must contain at least 8 characters.";
+      }
+      if (value.length > 128) {
+        return "Password must not exceed 128 characters.";
+      }
+      return "";
+
+    case "confirmPassword":
+      if (!value) return "Please confirm your password.";
+      if (value !== values.password) {
+        return "Passwords do not match.";
+      }
+      return "";
+
+    default:
+      return "";
+  }
+}
 
 function SignupPage() {
   const navigate = useNavigate();
 
+  const [values, setValues] = useState(initialValues);
+  const [touched, setTouched] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const errors = Object.fromEntries(
+    Object.keys(initialValues).map((field) => [
+      field,
+      validateField(field, values[field], values),
+    ]),
+  );
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setValues((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+    setTouched((previous) => ({
+      ...previous,
+      [name]: true,
+      ...(name === "password" && previous.confirmPassword
+        ? { confirmPassword: true }
+        : {}),
+    }));
+
+    setError("");
+    setSuccess("");
+  };
+
+  const handleBlur = (event) => {
+    const { name } = event.target;
+
+    setTouched((previous) => ({
+      ...previous,
+      [name]: true,
+    }));
+  };
+
+  const getFieldProps = (name) => ({
+    name,
+    value: values[name],
+    onChange: handleChange,
+    onBlur: handleBlur,
+    "aria-invalid": touched[name] && Boolean(errors[name]),
+    "aria-describedby":
+      touched[name] && errors[name] ? `${name}-error` : undefined,
+  });
+
+  const renderFieldError = (name) =>
+    touched[name] && errors[name] ? (
+      <p id={`${name}-error`} role="alert" className="text-xs text-destructive">
+        {errors[name]}
+      </p>
+    ) : null;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    setSuccess("");
 
-    const formData = new FormData(event.currentTarget);
-    const password = formData.get("password");
-    const confirmPassword = formData.get("confirmPassword");
+    const allTouched = Object.fromEntries(
+      Object.keys(initialValues).map((field) => [field, true]),
+    );
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+    setTouched(allTouched);
+
+    const hasErrors = Object.values(errors).some(Boolean);
+
+    if (hasErrors) {
       return;
     }
 
     setLoading(true);
 
     try {
-      // TODO: Connect your registration logic here.
-      // Example: createUserWithEmailAndPassword(auth, email, password)
+      await signUpWithEmail({
+        fullname: values.fullName.trim(),
+        username: values.username.trim(),
+        email: values.email.trim(),
+        password: values.password,
+      });
 
-      console.log("Sign up form submitted.");
-    } catch {
-      setError("Unable to create your account. Please try again.");
+      setSuccess("Your account was created successfully.");
+      setValues(initialValues);
+      setTouched({});
+    } catch (err) {
+      setError(
+        err?.message || "Unable to create your account. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -69,96 +194,83 @@ function SignupPage() {
             </p>
           </header>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Full Name */}
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div className="space-y-2">
-              <label
-                htmlFor="fullName"
-                className="text-sm font-medium leading-none"
-              >
+              <label htmlFor="fullName" className="text-sm font-medium">
                 Full Name
               </label>
 
               <InputGroup>
                 <InputGroupInput
+                  {...getFieldProps("fullName")}
                   id="fullName"
-                  name="fullName"
                   type="text"
                   placeholder="Enter your full name"
                   autoComplete="name"
                   required
                 />
-
                 <InputGroupAddon>
                   <UserRound className="size-4" />
                 </InputGroupAddon>
               </InputGroup>
+
+              {renderFieldError("fullName")}
             </div>
 
-            {/* Username */}
             <div className="space-y-2">
-              <label
-                htmlFor="username"
-                className="text-sm font-medium leading-none"
-              >
+              <label htmlFor="username" className="text-sm font-medium">
                 Username
               </label>
 
               <InputGroup>
                 <InputGroupInput
+                  {...getFieldProps("username")}
                   id="username"
-                  name="username"
                   type="text"
                   placeholder="Choose a username"
                   autoComplete="username"
                   minLength={3}
                   required
                 />
-
                 <InputGroupAddon>
                   <User className="size-4" />
                 </InputGroupAddon>
               </InputGroup>
+
+              {renderFieldError("username")}
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="text-sm font-medium leading-none"
-              >
+              <label htmlFor="email" className="text-sm font-medium">
                 Email Address
               </label>
 
               <InputGroup>
                 <InputGroupInput
+                  {...getFieldProps("email")}
                   id="email"
-                  name="email"
                   type="email"
                   placeholder="you@example.com"
                   autoComplete="email"
                   required
                 />
-
                 <InputGroupAddon>
                   <Mail className="size-4" />
                 </InputGroupAddon>
               </InputGroup>
+
+              {renderFieldError("email")}
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="text-sm font-medium leading-none"
-              >
+              <label htmlFor="password" className="text-sm font-medium">
                 Password
               </label>
 
               <InputGroup>
                 <InputGroupInput
+                  {...getFieldProps("password")}
                   id="password"
-                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
                   autoComplete="new-password"
@@ -188,24 +300,22 @@ function SignupPage() {
                 </InputGroupAddon>
               </InputGroup>
 
+              {renderFieldError("password")}
+
               <p className="text-xs text-muted-foreground">
                 Use at least 8 characters.
               </p>
             </div>
 
-            {/* Confirm Password */}
             <div className="space-y-2">
-              <label
-                htmlFor="confirmPassword"
-                className="text-sm font-medium leading-none"
-              >
+              <label htmlFor="confirmPassword" className="text-sm font-medium">
                 Confirm Password
               </label>
 
               <InputGroup>
                 <InputGroupInput
+                  {...getFieldProps("confirmPassword")}
                   id="confirmPassword"
-                  name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Re-enter your password"
                   autoComplete="new-password"
@@ -238,6 +348,8 @@ function SignupPage() {
                   </InputGroupButton>
                 </InputGroupAddon>
               </InputGroup>
+
+              {renderFieldError("confirmPassword")}
             </div>
 
             {error && (
@@ -246,12 +358,17 @@ function SignupPage() {
               </p>
             )}
 
+            {success && (
+              <p role="status" className="text-sm text-green-600">
+                {success}
+              </p>
+            )}
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Create Account"}
             </Button>
           </form>
 
-          {/* Login Navigation */}
           <div className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <button
