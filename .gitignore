@@ -26,3 +26,7 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+
+# Firebase Admin credentials
+kwentify-51160-firebase-adminsdk-fbsvc-87b20b2180.json
+serviceAccountKey.json
