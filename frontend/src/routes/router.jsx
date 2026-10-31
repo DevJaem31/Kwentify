@@ -8,7 +8,7 @@ import ProtectedRoute from "../routes/protectedRoute";
 import DashboardPage from "../pages/ProtectedPages/dashboardPage";
 import NotFound from "../pages/StaticPages/pageNotFound";
 
-// import DashboardHome from "../pages/Dashboard/dashboard-home";
+import OverviewPage from "../pages/ProtectedPages/overviewPage";
 // import TransactionsPage from "../pages/Transactions/transactions-page";
 // import BudgetsPage from "../pages/Budgets/budgets-page";
 // import SavingsPage from "../pages/Savings/savings-page";
@@ -39,10 +39,10 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardPage />,
         children: [
-          //   {
-          //     index: true,
-          //     element: <DashboardHome />,
-          //   },
+          {
+            index: true,
+            element: <OverviewPage />,
+          },
           //   {
           //     path: "transactions",
           //     element: <TransactionsPage />,

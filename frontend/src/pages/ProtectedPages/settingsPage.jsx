@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 
-import useSettings from "../../components/settings-components/settings-tools/useSettings";
+import useSettings from "../../hooks/useSettings";
 import SettingsHeader from "../../components/settings-components/SettingsHeader";
 import SettingsSidebar from "../../components/settings-components/SettingsSidebar";
 import ProfileSection from "../../components/settings-components/ProfileSection";

@@ -7,8 +7,11 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
 
-import { auth, db } from "../../../../firebase";
-import { DEFAULT_SETTINGS, mergeSettings } from "./settings.constants";
+import { auth, db } from "../../firebase";
+import {
+  DEFAULT_SETTINGS,
+  mergeSettings,
+} from "../components/settings-components/settings-tools/settings.constants";
 
 import {
   enablePushNotifications,
